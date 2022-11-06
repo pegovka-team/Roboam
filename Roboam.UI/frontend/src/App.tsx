@@ -1,29 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { apiInstance } from "./api";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { PageLink } from "./utils/links";
+import MainPage from "./pages/main/main";
+import NotFoundPage from "./pages/not-found/not-found";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button onClick={async () => alert(await apiInstance.test())}>
-          CLICK ME!
-        </button>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path={PageLink.main}
+          element={<MainPage />}
+        />
+        <Route
+          path="*"
+          element={<NotFoundPage />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
