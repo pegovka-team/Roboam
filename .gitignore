@@ -107,6 +107,9 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 
+# Intellij
+.idea/
+
 # Visual Studio profiler
 *.psess
 *.vsp
