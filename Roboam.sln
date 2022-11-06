@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agent", "agent\agent.csproj", "{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roboam.UI", "Roboam.UI\Roboam.UI.csproj", "{AE6CD67D-331A-4106-869F-9C6015D3ECFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6CD67D-331A-4106-869F-9C6015D3ECFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6CD67D-331A-4106-869F-9C6015D3ECFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6CD67D-331A-4106-869F-9C6015D3ECFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6CD67D-331A-4106-869F-9C6015D3ECFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
