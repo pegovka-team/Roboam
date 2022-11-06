@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { apiInstance } from "./api";
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={async () => alert(await apiInstance.test())}>
+          CLICK ME!
+        </button>
       </header>
     </div>
   );
