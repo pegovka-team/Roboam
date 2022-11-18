@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CliWrap;
 
 namespace agent
 {
@@ -10,13 +14,16 @@ namespace agent
         {
             if (args.Length != 2)
             {
-                Console.WriteLine("Usage: agent <repoDirectory> <repoUrl>");
+                Console.WriteLine("Usage: agent <repoUrl> <repoDirectory>");
                 return;
             }
             var repoUrl = args[0];
             var repoDirectory = args[1];
             
-            // TODO: сносить директорию перед клонированием, если уже что-то есть, или просто не клонировать
+            if (Directory.Exists(repoDirectory))
+            {
+                Directory.Delete(repoDirectory, true);
+            }
             await Git.Clone(repoUrl, repoDirectory);
 
             var lastCommitInfo = await Git.GetLastCommitInfo(repoDirectory);
@@ -28,15 +35,37 @@ namespace agent
             Console.WriteLine(currentCommitHash);
             Console.WriteLine(currentCommitMessage);
 
+            var proc = new Process();
+
             if (currentCommitMessage.StartsWith("#restart"))
             {
-                // TODO: реализовать перезапуск воркера с командой из конфига и параметрами из сообщения коммита
-                Console.WriteLine("Detected restart command in commit message, restarting...");
+                var runParamsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
+                var runParams = await JsonSerializer.DeserializeAsync<RunParams>(runParamsReadStream);
+                if (runParams is null)
+                {
+                    throw new Exception("Could not load run_params.json from repository root");
+                }
+                
+                if (runParams.BuildCommand is not null)
+                {
+                    await Cli.Wrap(runParams.BuildCommand)
+                        .WithArguments(runParams.BuildArgs)
+                        .ExecuteAsync();
+                }
+                
+                var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
+                proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
+                proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.WorkingDirectory = repoDirectory;
+                proc.Start();
+
+                Console.WriteLine($"Restarting with args {argsFromLastCommit}");
             }
             
             while (true)
             {
-                await Git.Pull(repoDirectory); // TODO: заменить на более надёжную комбинацию Fetch+Reset
+                await Git.FetchAndResetHard(repoDirectory);
 
                 lastCommitInfo = await Git.GetLastCommitInfo(repoDirectory);
                 if (lastCommitInfo.Item1 != currentCommitHash)
@@ -46,10 +75,37 @@ namespace agent
                     Console.WriteLine("Detected changes in repo, new HEAD commit info:");
                     Console.WriteLine(currentCommitHash);
                     Console.WriteLine(currentCommitMessage);
-                    
+
                     if (currentCommitMessage.StartsWith("#restart"))
                     {
-                        Console.WriteLine("Detected restart command in commit message, restarting...");
+                        try
+                        {
+                            proc.Kill();
+                        } catch (InvalidOperationException) {}
+
+                        var runParamsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
+                        var runParams = await JsonSerializer.DeserializeAsync<RunParams>(runParamsReadStream);
+                        if (runParams is null)
+                        {
+                            throw new Exception("Could not load run_params.json from repository root");
+                        }
+                        
+                        if (runParams.BuildCommand is not null)
+                        {
+                            await Cli.Wrap(runParams.BuildCommand)
+                                .WithArguments(runParams.BuildArgs)
+                                .WithWorkingDirectory(repoDirectory)
+                                .ExecuteAsync();
+                        }
+                        
+                        var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
+                        proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
+                        proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
+                        proc.StartInfo.UseShellExecute = true;
+                        proc.StartInfo.WorkingDirectory = repoDirectory;
+                        proc.Start();
+
+                        Console.WriteLine($"Restarting with args {argsFromLastCommit}");
                     }
                 }
                 
