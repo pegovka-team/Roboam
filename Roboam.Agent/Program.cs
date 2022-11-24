@@ -19,6 +19,7 @@ namespace agent
             }
             var repoUrl = args[0];
             var repoDirectory = args[1];
+            // TODO: передавать в параметры ветку
             
             if (Directory.Exists(repoDirectory))
             {
@@ -56,8 +57,6 @@ namespace agent
                 var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
                 proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
                 proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
-                proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.WorkingDirectory = repoDirectory;
                 proc.Start();
 
                 Console.WriteLine($"Restarting with args {argsFromLastCommit}");
@@ -101,14 +100,13 @@ namespace agent
                         var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
                         proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
                         proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
-                        proc.StartInfo.UseShellExecute = true;
-                        proc.StartInfo.WorkingDirectory = repoDirectory;
                         proc.Start();
 
                         Console.WriteLine($"Restarting with args {argsFromLastCommit}");
                     }
                 }
                 
+                // TODO: передавать интервал в аргументах запуска агента
                 Thread.Sleep(5000);
             }
         }
