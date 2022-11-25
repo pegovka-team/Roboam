@@ -7,10 +7,10 @@ namespace agent
 {
     public static class Git
     {
-        public static async Task<BufferedCommandResult> Clone(string repoUrl, string repoDirectory)
+        public static async Task<BufferedCommandResult> Clone(string repoUrl, string repoDirectory, string repoBranch)
         {
             var gitExecuteResult = await Cli.Wrap("git")
-                .WithArguments($"clone {repoUrl} {repoDirectory}")
+                .WithArguments($"clone {repoUrl} {repoDirectory} --branch {repoBranch}")
                 .WithEnvironmentVariables(new Dictionary<string, string?>
                 {
                     {"GIT_SSH_COMMAND", "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"}
@@ -38,7 +38,7 @@ namespace agent
             return (currentCommitHash, currentCommitMessage);
         }
         
-        public static async Task<BufferedCommandResult> FetchAndResetHard(string repoDirectory)
+        public static async Task<BufferedCommandResult> FetchAndResetHard(string repoDirectory, string repoBranch)
         {
             var gitExecuteResult = await Cli.Wrap("git")
                 .WithWorkingDirectory(repoDirectory)
@@ -51,7 +51,7 @@ namespace agent
             
             gitExecuteResult = await Cli.Wrap("git")
                 .WithWorkingDirectory(repoDirectory)
-                .WithArguments(new[]{"reset", "origin/main", "--hard"})
+                .WithArguments(new[]{"reset", $"origin/{repoBranch}", "--hard"})
                 .WithEnvironmentVariables(new Dictionary<string, string?>
                 {
                     {"GIT_SSH_COMMAND", "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"}

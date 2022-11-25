@@ -12,20 +12,21 @@ namespace agent
     {
         public static async Task Main(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length != 3)
             {
-                Console.WriteLine("Usage: agent <repoUrl> <repoDirectory>");
+                Console.WriteLine("Usage: agent <repoUrl> <repoDirectory> <repoBranch> [repoUpdateInterval]");
                 return;
             }
             var repoUrl = args[0];
             var repoDirectory = args[1];
-            // TODO: передавать в параметры ветку
+            var repoBranch = args[2];
+            var repoUpdateInterval = args.Length > 3 ? int.Parse(args[3]) : 5000;
             
             if (Directory.Exists(repoDirectory))
             {
                 Directory.Delete(repoDirectory, true);
             }
-            await Git.Clone(repoUrl, repoDirectory);
+            await Git.Clone(repoUrl, repoDirectory, repoBranch);
 
             var lastCommitInfo = await Git.GetLastCommitInfo(repoDirectory);
             var currentCommitHash = lastCommitInfo.Item1;
@@ -36,35 +37,35 @@ namespace agent
             Console.WriteLine(currentCommitHash);
             Console.WriteLine(currentCommitMessage);
 
-            var proc = new Process();
+            Process worker = new Process();
 
             if (currentCommitMessage.StartsWith("#restart"))
             {
-                var runParamsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
-                var runParams = await JsonSerializer.DeserializeAsync<RunParams>(runParamsReadStream);
-                if (runParams is null)
+                var commandsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
+                var commands = await JsonSerializer.DeserializeAsync<RunWorkerCommands>(commandsReadStream);
+                if (commands is null)
                 {
                     throw new Exception("Could not load run_params.json from repository root");
                 }
-                
-                if (runParams.BuildCommand is not null)
+
+                if (commands.BuildCommand is not null)
                 {
-                    await Cli.Wrap(runParams.BuildCommand)
-                        .WithArguments(runParams.BuildArgs)
+                    await Cli.Wrap(commands.BuildCommand)
+                        .WithArguments(commands.BuildArgs)
                         .ExecuteAsync();
                 }
-                
+
                 var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
-                proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
-                proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
-                proc.Start();
+                var workerExec = Cli.Wrap(commands.ExecuteProcessCommand)
+                    .WithArguments(new[] {commands.ExecuteProcessArgs, argsFromLastCommit}).ExecuteAsync();
+                worker = Process.GetProcessById(workerExec.ProcessId);
 
                 Console.WriteLine($"Restarting with args {argsFromLastCommit}");
             }
             
             while (true)
             {
-                await Git.FetchAndResetHard(repoDirectory);
+                await Git.FetchAndResetHard(repoDirectory, repoBranch);
 
                 lastCommitInfo = await Git.GetLastCommitInfo(repoDirectory);
                 if (lastCommitInfo.Item1 != currentCommitHash)
@@ -79,35 +80,35 @@ namespace agent
                     {
                         try
                         {
-                            proc.Kill();
+                            worker.Kill();
                         } catch (InvalidOperationException) {}
 
-                        var runParamsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
-                        var runParams = await JsonSerializer.DeserializeAsync<RunParams>(runParamsReadStream);
-                        if (runParams is null)
+                        var commandsReadStream = File.OpenRead(Path.Join(repoDirectory, "run_params.json"));
+                        var commands = await JsonSerializer.DeserializeAsync<RunWorkerCommands>(commandsReadStream);
+                        if (commands is null)
                         {
                             throw new Exception("Could not load run_params.json from repository root");
                         }
                         
-                        if (runParams.BuildCommand is not null)
+                        if (commands.BuildCommand is not null)
                         {
-                            await Cli.Wrap(runParams.BuildCommand)
-                                .WithArguments(runParams.BuildArgs)
+                            await Cli.Wrap(commands.BuildCommand)
+                                .WithArguments(commands.BuildArgs)
                                 .WithWorkingDirectory(repoDirectory)
                                 .ExecuteAsync();
                         }
                         
                         var argsFromLastCommit = currentCommitMessage.Split(' ', 2)[1];
-                        proc.StartInfo.FileName = runParams.ExecuteProcessCommand;
-                        proc.StartInfo.Arguments = $"{runParams.ExecuteProcessArgs} {argsFromLastCommit}";
-                        proc.Start();
+                        var workerExec = Cli.Wrap(commands.ExecuteProcessCommand)
+                            .WithArguments(new[] {commands.ExecuteProcessArgs, argsFromLastCommit}).ExecuteAsync();
+                        worker = Process.GetProcessById(workerExec.ProcessId);
 
                         Console.WriteLine($"Restarting with args {argsFromLastCommit}");
                     }
                 }
                 
                 // TODO: передавать интервал в аргументах запуска агента
-                Thread.Sleep(5000);
+                Thread.Sleep(repoUpdateInterval);
             }
         }
     }
