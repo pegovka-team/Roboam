@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Cancel } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Cancel, Canceler } from "axios";
 import {
     ApiEntityResult,
     IApiEntityResult,
@@ -6,6 +6,8 @@ import {
     IApiEntityResultSuccess
 } from "../models/api-result/api-entity-result";
 import { RoboamApiError } from "../models/api-result/api-error";
+
+axios.defaults.baseURL = "http://localhost:3001";
 
 export async function get<T>(url: string, config?: AxiosRequestConfig, showErrorMessage: boolean = false): Promise<T | never> {
     const response = await getInternal<T>(url, config);
@@ -20,6 +22,51 @@ export async function get<T>(url: string, config?: AxiosRequestConfig, showError
         throw error;
     }
     throw new RoboamApiError();
+}
+
+export async function post<T>(url: string, data?: unknown, canceler?: { cancel: Canceler }): Promise<ApiEntityResult<T>> {
+    try {
+        const response = await axios.post(url, JSON.stringify(data), {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken: new axios.CancelToken(c => {
+                if (canceler) {
+                    canceler.cancel = c;
+                }
+            }),
+        });
+
+        checkResponseCode(response);
+
+        return extractResponse(response, true);
+    } catch (error) {
+        if (error instanceof AxiosError || (error as Cancel) !== undefined) {
+            const thrown: AxiosError | Cancel = error as AxiosError | Cancel;
+
+            if (!axios.isCancel(thrown))
+                return ApiEntityResult.Error();
+        }
+        if (error instanceof Error) {
+            return ApiEntityResult.Error(error.message);
+        }
+        return ApiEntityResult.Error();
+    }
+}
+
+export async function del<T>(url: string): Promise<IApiEntityResult<T>> {
+    try {
+        const response = await axios.delete(url);
+
+        checkResponseCode(response);
+
+        return extractResponse(response, true);
+    } catch (error) {
+        if (error instanceof Error) {
+            return ApiEntityResult.Error(error.message);
+        }
+        return ApiEntityResult.Error();
+    }
 }
 
 async function getInternal<T>(url: string, config?: AxiosRequestConfig): Promise<IApiEntityResult<T> | void> {
