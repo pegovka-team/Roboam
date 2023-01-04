@@ -1,7 +1,7 @@
 import { ignoreCaseIncludes } from "../utils/sting-helpers";
 import { types } from "mobx-state-tree";
 
-export const NavigationItemStore = types.model({
+const NavigationItemStore = types.model({
     search: "",
     items: types.optional(types.array(types.string), []),
     selectedItems: types.optional(types.array(types.string), []),
@@ -29,3 +29,5 @@ export const NavigationItemStore = types.model({
         return self.items.filter(i => ignoreCaseIncludes(i, self.search));
     }
 }));
+
+export default NavigationItemStore;

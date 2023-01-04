@@ -1,8 +1,8 @@
-import { NavigationItemStore } from "./navigation-item-store";
+import NavigationItemStore from "./navigation-item-store";
 import { flow } from "mobx-state-tree";
 import { apiInstance } from "../api";
 
-export const DetailsLevelStore = NavigationItemStore
+const DetailsLevelStore = NavigationItemStore
     .named("DetailsLevelStore")
     .actions((self) => ({
         load: flow(function* () {
@@ -13,3 +13,5 @@ export const DetailsLevelStore = NavigationItemStore
             this.load();
         },
     }));
+
+export default DetailsLevelStore;

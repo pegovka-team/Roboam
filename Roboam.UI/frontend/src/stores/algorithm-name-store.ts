@@ -1,8 +1,8 @@
-import { NavigationItemStore } from "./navigation-item-store";
+import NavigationItemStore from "./navigation-item-store";
 import { flow } from "mobx-state-tree";
 import { apiInstance } from "../api";
 
-export const AlgorithmNameStore = NavigationItemStore
+const AlgorithmNameStore = NavigationItemStore
     .named("AlgorithmNameStore")
     .actions((self) => ({
         load: flow(function* () {
@@ -13,3 +13,5 @@ export const AlgorithmNameStore = NavigationItemStore
             this.load();
         },
     }));
+
+export default AlgorithmNameStore;

@@ -1,8 +1,8 @@
-import { NavigationItemStore } from "./navigation-item-store";
+import NavigationItemStore from "./navigation-item-store";
 import { flow } from "mobx-state-tree";
 import { apiInstance } from "../api";
 
-export const TagStore = NavigationItemStore
+const TagStore = NavigationItemStore
     .named("TagStore")
     .actions((self) => ({
         load: flow(function* () {
@@ -13,3 +13,5 @@ export const TagStore = NavigationItemStore
             this.load();
         },
     }));
+
+export default TagStore;
