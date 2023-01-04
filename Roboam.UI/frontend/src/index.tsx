@@ -3,13 +3,20 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { MobXProviderContext, Provider } from "mobx-react";
+import RootStore from "./stores/root-store";
+
+export const ROOT_STORE = new RootStore();
+export const ROOT_STORE_CONTEXT = MobXProviderContext as unknown as React.Context<{ rootStore: RootStore }>;
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+      <Provider rootStore={ROOT_STORE}>
+          <App />
+      </Provider>
   </React.StrictMode>
 );
 
