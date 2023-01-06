@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agent", "agent\agent.csproj", "{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roboam.Agent", "Roboam.Agent\Roboam.Agent.csproj", "{BD9C9F54-6F58-42D0-BA0A-4DF44BEDB828}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roboam.UI", "Roboam.UI\Roboam.UI.csproj", "{AE6CD67D-331A-4106-869F-9C6015D3ECFE}"
 EndProject
