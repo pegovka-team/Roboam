@@ -1,26 +1,10 @@
-import logo from "../../logo.svg";
-import { apiInstance } from "../../api";
+import TasksDashboard from "../../components/task-item/tasks-dashboard";
+import { observer } from "mobx-react";
 
-export default function MainPage() {
+const MainPage = observer(() => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-                <button onClick={async () => alert(await apiInstance.test())}>
-                    CLICK ME!
-                </button>
-            </header>
-        </div>
+        <TasksDashboard />
     );
-}
+});
+
+export default MainPage;
