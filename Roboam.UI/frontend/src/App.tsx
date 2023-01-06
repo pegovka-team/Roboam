@@ -1,24 +1,33 @@
 import React from 'react';
-import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { PageLink } from "./utils/links";
-import MainPage from "./pages/main/main";
-import NotFoundPage from "./pages/not-found/not-found";
+import { BrowserRouter, useRoutes } from 'react-router-dom';
+import { PageLink } from './utils/links';
+import MainPage from './pages/main/main';
+import NotFoundPage from './pages/not-found/not-found';
+import styled from '@emotion/styled';
+import { NavigationMenu } from './components/navigation-menu/navigation-menu';
 
-function App() {
+const AppContainer = styled.div`
+    display: flex;
+    flex-wrap: nowrap;
+`;
+
+function AppRoutes() {
+    return useRoutes(
+        [
+            {path: PageLink.main, element: <MainPage />},
+            {path: '*', element: <NotFoundPage />}
+        ]
+    );
+}
+
+const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={PageLink.main}
-          element={<MainPage />}
-        />
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
-      </Routes>
-    </BrowserRouter>
+      <AppContainer>
+          <BrowserRouter>
+              <NavigationMenu />
+              <AppRoutes />
+          </BrowserRouter>
+      </AppContainer>
   );
 }
 
