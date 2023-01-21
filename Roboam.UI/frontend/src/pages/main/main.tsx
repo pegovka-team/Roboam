@@ -1,4 +1,4 @@
-import TasksDashboard from "../../components/task-item/tasks-dashboard";
+import TasksDashboard from "../../components/tasks-dashboard/tasks-dashboard";
 import { observer } from "mobx-react";
 import { useContext } from "react";
 import { ROOT_STORE_CONTEXT } from "../../index";
