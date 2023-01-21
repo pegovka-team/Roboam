@@ -22,15 +22,6 @@ const AlgorithmDataStore = types.model({
     return {
         afterCreate
     };
-}).actions(self => ({
-    sortedByFavoriteItems(favoriteTaskMap: Record<number, boolean>) {
-        return self.items.slice().sort(function(x, y) {
-            if (favoriteTaskMap[x.taskNumber] === favoriteTaskMap[y.taskNumber])
-                return 0;
-
-            return favoriteTaskMap[x.taskNumber] ? -1 : 1;
-        });
-    }
-}));
+});
 
 export default AlgorithmDataStore;

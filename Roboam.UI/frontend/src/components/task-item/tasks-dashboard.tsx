@@ -21,15 +21,11 @@ const Grid = _Grid as unknown as FC<GridProps>;
 
 const rowsCount = 24;
 
-const TasksDashboard = observer(() => {
-    const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { algorithmDataStore, favoriteTasksStore } = rootStore;
-    const items = algorithmDataStore.sortedByFavoriteItems(favoriteTasksStore.favoriteTasksMap);
-
-    if (items.length === 0)
+const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
+    if (tasks.length === 0)
         return <div>Loading..</div>;
     
-    const columnsCount = Math.ceil(Math.max(...items.map(i => i.taskNumber)) / rowsCount);
+    const columnsCount = Math.ceil(tasks.length / rowsCount);
     
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh'}}>
@@ -37,8 +33,8 @@ const TasksDashboard = observer(() => {
                 <AutoSizer disableHeight>
                     {({width}) => (
                         <Grid
-                            style={{paddingBlockStart: '8px', paddingInlineStart: '8px', }}
-                            cellRenderer={it => cellRenderer(it, items)}
+                            style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
+                            cellRenderer={it => cellRenderer(it, tasks)}
                             columnWidth={200}
                             columnCount={columnsCount}
                             height={window.innerHeight}
