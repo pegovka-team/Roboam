@@ -31,7 +31,9 @@ export default class Api {
     }
     
     public addFavoriteTask = (task: number) => {
-        return post("api/favoriteTask", task);
+        return post("api/favoriteTask", {
+            taskId: task,
+        });
     }
 
     public deleteFavoriteTask = (task: number) => {
