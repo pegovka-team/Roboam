@@ -28,13 +28,18 @@ server.get("/favoriteTask", function (_req, res) {
     });
 });
 
-server.post("/favoriteTask", function (_req, res) {
+server.post("/favoriteTask", function (req, res) {
+    favoriteTasks.push(req.body.taskId);
     return res.jsonp({
         isSuccessful: true,
     });
 });
 
-server.delete("/favoriteTask/:taskId", function (_req, res) {
+server.delete("/favoriteTask/:taskId", function (req, res) {
+    const taskIndex = favoriteTasks.findIndex(taskId => taskId.toString() === req.params.taskId);
+    if (taskIndex !== -1) {
+        favoriteTasks.splice(taskIndex, 1);
+    }
     return res.jsonp({
         isSuccessful: true,
     });
