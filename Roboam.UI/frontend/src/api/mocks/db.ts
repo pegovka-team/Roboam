@@ -66,6 +66,6 @@ const getAlgorithmDataList = (algorithmName: string): IAlgorithmData[] => {
     });
 }
 
-export const algorithmsDataList = algorithmNames.filter(n => n === "algo 1").map(name => getAlgorithmDataList(name)).flat();
+export const algorithmsDataList = algorithmNames.map(name => getAlgorithmDataList(name)).flat();
 
 export const favoriteTasks = _.shuffle(_.range(1, maxTaskNumber + 1)).slice(0, Math.min(10, getRandomInt(0, maxTaskNumber / 10)));
