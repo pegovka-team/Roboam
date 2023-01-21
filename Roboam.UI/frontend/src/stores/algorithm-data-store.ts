@@ -11,16 +11,17 @@ const AlgorithmDataStore = types.model({
             self.items.push(item);
         });
     }
-    const load = flow(function* load() {
-        const response: IAlgorithmData[] = yield apiInstance.getAlgorithmData();
+    const load = flow(function* load(algorithmNames: string[], tags: string[]) {
+        const response: IAlgorithmData[] = yield apiInstance.getAlgorithmData(algorithmNames, tags);
         updateData(response);
     });
     function afterCreate() {
-        load();
+        load([], []);
     }
 
     return {
-        afterCreate
+        afterCreate,
+        load,
     };
 });
 

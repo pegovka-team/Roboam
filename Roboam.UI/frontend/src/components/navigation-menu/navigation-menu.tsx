@@ -7,7 +7,7 @@ import styled from "@emotion/styled";
 
 export const NavigationMenu = observer(() => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { algorithmNameStore, tagStore, detailsLevelStore } = rootStore;
+    const { algorithmNameStore, tagStore, detailsLevelStore, algorithmDataStore } = rootStore;
 
     return (
         <NavigationItemsWrapper style={{}}>
@@ -19,7 +19,10 @@ export const NavigationMenu = observer(() => {
                     onSearchChange={algorithmNameStore.handleSearchChange}
                     filteredItems={algorithmNameStore.filteredBySearchItems}
                     selectedItems={algorithmNameStore.selectedItems}
-                    onSelectItem={algorithmNameStore.changeSelectedItem}
+                    onSelectItem={(item, active) => {
+                        algorithmNameStore.changeSelectedItem(item, active);
+                        algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
+                    }}
                 />
                 <ListWithSearch
                     searchLabel={'Tag'}
@@ -27,7 +30,10 @@ export const NavigationMenu = observer(() => {
                     onSearchChange={tagStore.handleSearchChange}
                     filteredItems={tagStore.filteredBySearchItems}
                     selectedItems={tagStore.selectedItems}
-                    onSelectItem={tagStore.changeSelectedItem}
+                    onSelectItem={(item, active) => {
+                        tagStore.changeSelectedItem(item, active);
+                        algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
+                    }}
                 />
                 <ListWithSearch
                     searchLabel={'Details level'}

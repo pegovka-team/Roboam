@@ -1,9 +1,17 @@
 import { del, get, post } from "../utils/requests";
 import { IAlgorithmData } from "../models/algorithm-data";
+import * as queryString from "query-string";
 
 export default class Api {
-    public getAlgorithmData = () => {
-        return get<IAlgorithmData[]>("api/algorithmData");
+    public getAlgorithmData = (algorithmNames: string[], tags: string[]) => {
+        const url = queryString.stringifyUrl({
+            url: "api/algorithmData",
+            query: {
+                algorithmNames: algorithmNames,
+                tags: tags,
+            }
+        });
+        return get<IAlgorithmData[]>(url);
     }
     
     public getAlgorithmsNames = () => {
