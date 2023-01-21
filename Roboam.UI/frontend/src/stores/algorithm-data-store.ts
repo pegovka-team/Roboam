@@ -6,6 +6,7 @@ const AlgorithmDataStore = types.model({
     items: types.optional(types.array(AlgorithmData), []),
 }).actions(self => {
     function updateData(data: IAlgorithmData[]) {
+        self.items.clear();
         data.forEach(item => {
             self.items.push(item);
         });
