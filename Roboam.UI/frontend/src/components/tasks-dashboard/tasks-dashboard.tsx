@@ -115,7 +115,7 @@ export const TaskItem = observer(({item, disableStar, disableTaskNumber}: TaskIt
                     precision={0}
                 />
             </div>
-            <div style={{ paddingLeft: 8, color: 'gray', fontSize: '10px' }}>
+            <div style={{ paddingLeft: 8, color: 'gray', fontSize: '10px', width: 32 }}>
                 {getTimeInterval(item.bestSentTimeMin)}
             </div>
         </div>
