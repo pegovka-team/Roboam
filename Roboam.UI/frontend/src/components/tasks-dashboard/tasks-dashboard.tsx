@@ -76,9 +76,11 @@ function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlg
 
 interface TaskItemProps {
     item: IAlgorithmData;
+    disableStar?: boolean;
+    disableTaskNumber?: boolean;
 }
 
-const TaskItem = observer(({item}: TaskItemProps) => {
+export const TaskItem = observer(({item, disableStar, disableTaskNumber}: TaskItemProps) => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
     const { favoriteTasksStore } = rootStore;
     const { favoriteTasksMap } = favoriteTasksStore;
@@ -91,13 +93,17 @@ const TaskItem = observer(({item}: TaskItemProps) => {
             alignItems: 'center',
             justifyContent: 'left',
         }}>
-            <div style={{ width: 25, height: 24 }}>
-                {favoriteTasksMap[item.taskNumber]
-                    ? <Star sx={{color: 'gold'}} onClick={() => favoriteTasksStore.deleteFavorite(item.taskNumber)} />
-                    : <Star sx={{color: 'lightgray'}} onClick={() => favoriteTasksStore.setFavorite(item.taskNumber)} />
-                }
-            </div>
-            <div style={{ width: 30, fontSize: '12px' }}>{item.taskNumber}</div>
+            {disableStar ? null : (
+                <div style={{ width: 25, height: 24 }}>
+                    {favoriteTasksMap[item.taskNumber]
+                        ? <Star sx={{color: 'gold'}} onClick={() => favoriteTasksStore.deleteFavorite(item.taskNumber)} />
+                        : <Star sx={{color: 'lightgray'}} onClick={() => favoriteTasksStore.setFavorite(item.taskNumber)} />
+                    }
+                </div>
+            )}
+            {disableTaskNumber ? null : (
+                <div style={{ width: 30, fontSize: '12px' }}>{item.taskNumber}</div>
+            )}
             <div style={{ width: 100, height: 22 }}>
                 <ScoreItem
                     width={100}
