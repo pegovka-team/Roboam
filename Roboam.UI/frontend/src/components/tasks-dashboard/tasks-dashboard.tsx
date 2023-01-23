@@ -18,12 +18,16 @@ import TaskItem from "../task-item/task-item";
 const AutoSizer = _AutoSizer as unknown as FC<AutoSizerProps>;
 const Grid = _Grid as unknown as FC<GridProps>;
 
-const rowsCount = 24;
+const rowHeight = 30;
 
 const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
+    const { rootStore } = useContext(ROOT_STORE_CONTEXT);
+    const { appStore } = rootStore;
+
     if (tasks.length === 0)
         return <div>Loading..</div>;
     
+    const rowsCount = Math.floor(appStore.screenHeight / rowHeight) - 1; 
     const columnsCount = Math.ceil(tasks.length / rowsCount);
     
     return (
@@ -32,11 +36,11 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
                 {({width}) => (
                     <Grid
                         style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
-                        cellRenderer={it => cellRenderer(it, tasks)}
+                        cellRenderer={it => cellRenderer(it, tasks, rowsCount)}
                         columnWidth={200}
                         columnCount={columnsCount}
-                        height={window.innerHeight}
-                        rowHeight={30}
+                        height={appStore.screenHeight}
+                        rowHeight={rowHeight}
                         rowCount={rowsCount}
                         width={width}
                         overscanColumnCount={5}
@@ -59,7 +63,7 @@ export function bothDirectionOverscanIndicesGetter({
     }
 }
 
-function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[]) {
+function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[], rowsCount: number) {
     const item = items[rowsCount * columnIndex + rowIndex];
     
     if (!item) {
