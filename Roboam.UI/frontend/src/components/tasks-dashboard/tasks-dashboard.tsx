@@ -48,7 +48,7 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     );
 });
 
-function bothDirectionOverscanIndicesGetter({
+export function bothDirectionOverscanIndicesGetter({
    cellCount,
    overscanCellsCount,
    startIndex,
