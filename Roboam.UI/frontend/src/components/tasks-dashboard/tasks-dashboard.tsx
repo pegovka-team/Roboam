@@ -28,24 +28,22 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     const columnsCount = Math.ceil(tasks.length / rowsCount);
     
     return (
-        <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh'}}>
-            <div style={{width: 'calc(100vw - 160px)' }}>
-                <AutoSizer disableHeight>
-                    {({width}) => (
-                        <Grid
-                            style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
-                            cellRenderer={it => cellRenderer(it, tasks)}
-                            columnWidth={200}
-                            columnCount={columnsCount}
-                            height={window.innerHeight}
-                            rowHeight={30}
-                            rowCount={rowsCount}
-                            width={width}
-                            overscanColumnCount={5}
-                            overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
-                        />)}
-                </AutoSizer>
-            </div>
+        <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh', width: '100%'}}>
+            <AutoSizer disableHeight>
+                {({width}) => (
+                    <Grid
+                        style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
+                        cellRenderer={it => cellRenderer(it, tasks)}
+                        columnWidth={200}
+                        columnCount={columnsCount}
+                        height={window.innerHeight}
+                        rowHeight={30}
+                        rowCount={rowsCount}
+                        width={width}
+                        overscanColumnCount={5}
+                        overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
+                    />)}
+            </AutoSizer>
         </Paper>
     );
 });
