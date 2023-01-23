@@ -8,6 +8,7 @@ interface ScoreItemProps {
     localMax: number;
     globalMax?: number;
     precision?: number;
+    algorithmName: string;
 }
 
 const TooltipTextWrapper = styled.div`
@@ -16,10 +17,11 @@ const TooltipTextWrapper = styled.div`
     margin: 0px;
 `;
 
-const tooltipText = (currentScore: number, currentMax: number, localMax: number, globalMax?: number) => {
+const tooltipText = (algorithmName: string, currentScore: number, currentMax: number, localMax: number, globalMax?: number) => {
     return (
         <TooltipTextWrapper>
-            {`Current score:\t${currentScore}\n
+            {`${algorithmName}\n
+Current score:\t${currentScore}\n
 Current max:\t${currentMax}\n
 Local max:\t${localMax}\n
 ${globalMax && `Global max:\t${globalMax}`}`}
@@ -27,7 +29,7 @@ ${globalMax && `Global max:\t${globalMax}`}`}
     );
 }
 
-export default function ScoreItem({width, algorithmCurrentScore, algorithmMax, localMax, globalMax, precision}: ScoreItemProps) {
+export default function ScoreItem({width, algorithmCurrentScore, algorithmMax, localMax, globalMax, precision, algorithmName}: ScoreItemProps) {
     const limit = globalMax ?? localMax;
     const algorithmCurrentScoreWidth = limit > 0 ? width * (algorithmCurrentScore / limit) : 0;
     const algorithmMaxWidth = limit > 0 ? (width * (algorithmMax / limit)) : 0;
@@ -39,7 +41,7 @@ export default function ScoreItem({width, algorithmCurrentScore, algorithmMax, l
             enterDelay={500}
             enterNextDelay={250}
             disableInteractive
-            title={tooltipText(algorithmCurrentScore, algorithmMax, localMax, globalMax)}
+            title={tooltipText(algorithmName, algorithmCurrentScore, algorithmMax, localMax, globalMax)}
             placement={"right-start"}
         >
             <ScoreContainer width={width}>

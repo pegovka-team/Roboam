@@ -101,6 +101,7 @@ const TaskItem = observer(({item}: TaskItemProps) => {
             <div style={{ width: 100, height: 22 }}>
                 <ScoreItem
                     width={100}
+                    algorithmName={item.algorithmName}
                     algorithmCurrentScore={item.algorithmCurrentScore}
                     algorithmMax={item.algorithmMax}
                     localMax={item.localMax}
