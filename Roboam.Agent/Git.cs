@@ -10,7 +10,6 @@ namespace agent
     {
         public static async Task<BufferedCommandResult> Clone(string repoUrl, string repoDirectory, string repoBranch)
         {
-            // TOOD: обработать ошибки запуска процесса
             var gitCloneExecutionResult = await Cli.Wrap("git")
                 .WithArguments($"clone {repoUrl} {repoDirectory} --branch {repoBranch}")
                 .WithEnvironmentVariables(new Dictionary<string, string?>

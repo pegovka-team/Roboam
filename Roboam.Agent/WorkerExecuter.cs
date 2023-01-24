@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,61 +10,56 @@ namespace agent
 {
     public class WorkerExecuter
     {
-        public WorkerExecuter(RunWorkerCommands commands)
+        public WorkerExecuter(string repoDirectory)
         {
-            RunCommands = commands;
+            this.repoDirectory = repoDirectory;
             cancelCts.Token.Register(() => killCts.CancelAfter(TimeSpan.FromSeconds(5)));
         }
 
         public WorkerExecuter()
         {
-            RunCommands = new RunWorkerCommands();
+            repoDirectory = "";
+            cancelCts.Token.Register(() => killCts.CancelAfter(TimeSpan.FromSeconds(5)));
         }
 
-        public async void Execute(string extraCommitArgs)
+        public async void Execute(string args)
         {
-            foreach (var runCommand in RunCommands.Commands)
+            Console.WriteLine($"Executing runworker.sh {args}");
+
+            var stderrBuilder = new StringBuilder();
+            
+            try
             {
-                var args = runCommand.Args;
-                if (runCommand.WithArgsFromCommit && extraCommitArgs.Length > 0)
-                {
-                    args += $" {extraCommitArgs}";
-                }
-                Console.WriteLine($"Executing {runCommand.Executable} with args {args}");
-
-                var stderrBuilder = new StringBuilder();
                 
-                try
-                {
-                    workerCommandExecution = Cli.Wrap(runCommand.Executable)
-                        .WithArguments(args)
-                        .WithValidation(CommandResultValidation.None)
-                        .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
-                        .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
-                        .ExecuteAsync(killCts.Token, cancelCts.Token);
-                }
-                catch (System.ComponentModel.Win32Exception e)
-                {
-                    Console.WriteLine($"Failed to execute command {runCommand.Executable} with args {args}:\n" +
-                                      $"{e.Message}\n" +
-                                       "Stopped worker execution");
-                    break;
-                }
-
-                var workerCommandExecutionResult = await workerCommandExecution;
-                
-                if (workerCommandExecutionResult.ExitCode != 0)
-                {
-                    Console.WriteLine($"Execution of command {runCommand.Executable} {args} is finished with non-zero code:\n" +
-                                      $"{stderrBuilder}\n" +
-                                       "Stopped worker execution");
-                    break;
-                }
-
-                Console.WriteLine($"Finished execution of {runCommand.Executable} with args {args}");
-                cancelCts.TryReset();
-                killCts.TryReset();
+                workerCommandExecution = Cli.Wrap("bash")
+                    .WithArguments("runworker.sh" + " " + args)
+                    .WithWorkingDirectory(repoDirectory)
+                    .WithValidation(CommandResultValidation.None)
+                    .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
+                    .ExecuteAsync(killCts.Token, cancelCts.Token);
             }
+            catch (System.ComponentModel.Win32Exception e)
+            {
+                Console.WriteLine($"Failed to runworker.sh with args {args}:\n" +
+                                  $"{e.Message}\n" +
+                                   "Stopped worker execution");
+                return;
+            }
+
+            var workerCommandExecutionResult = await workerCommandExecution;
+
+            if (workerCommandExecutionResult.ExitCode != 0)
+            {
+                Console.WriteLine($"Execution of runworker.sh {args} is finished with non-zero code:\n" +
+                                  $"{stderrBuilder}\n" +
+                                   "Stopped worker execution");
+                return;
+            }
+
+            Console.WriteLine($"Finished execution of runworker.sh with args {args}");
+            cancelCts.TryReset();
+            killCts.TryReset();
         }
 
         public void InterruptCurrentExecution()
@@ -81,7 +77,7 @@ namespace agent
             }
         }
 
-        public RunWorkerCommands RunCommands;
+        private readonly string repoDirectory;
         private Task<CommandResult>? workerCommandExecution;
         private readonly CancellationTokenSource killCts = new();
         private readonly CancellationTokenSource cancelCts = new();

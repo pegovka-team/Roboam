@@ -51,8 +51,7 @@ namespace agent
                         {
                         }
 
-                        var runCommands = new RunWorkerCommands(await File.ReadAllLinesAsync(Path.Join(repoDirectory, "run.worker")));
-                        executer = new WorkerExecuter(runCommands);
+                        executer = new WorkerExecuter(repoDirectory);
                         
                         var extraArgs = "";
                         if (currentCommitMessage.Contains(' '))
