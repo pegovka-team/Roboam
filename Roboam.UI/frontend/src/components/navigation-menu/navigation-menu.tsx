@@ -53,7 +53,7 @@ export const NavigationMenu = observer(() => {
                         const item = e.target.value ? Number.parseInt(e.target.value) : undefined;
                         appStore.setTaskToScroll(item);
                     }}
-                    sx={{color: 'var(--search-color)'}}
+                    sx={{color: 'var(--search-color)', marginBlockStart: '32px'}}
                 />
             </article>
         </NavigationItemsWrapper>
