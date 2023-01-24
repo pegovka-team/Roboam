@@ -34,18 +34,30 @@ namespace agent
                 var stderrBuilder = new StringBuilder();
                 
                 // TOOD: обработать ошибки запуска процесса
-                workerCommandExecution = Cli.Wrap(runCommand.Executable)
-                    .WithArguments(args)
-                    .WithValidation(CommandResultValidation.None)
-                    .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
-                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
-                    .ExecuteAsync(killCts.Token, cancelCts.Token);
+                try
+                {
+                    workerCommandExecution = Cli.Wrap(runCommand.Executable)
+                        .WithArguments(args)
+                        .WithValidation(CommandResultValidation.None)
+                        .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
+                        .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
+                        .ExecuteAsync(killCts.Token, cancelCts.Token);
+                }
+                catch (System.ComponentModel.Win32Exception e)
+                {
+                    Console.WriteLine($"Failed to execute command {runCommand.Executable} with args {args}:\n" +
+                                      $"{e.Message}\n" +
+                                       "Stopped worker execution");
+                    break;
+                }
+
                 var workerCommandExecutionResult = await workerCommandExecution;
                 
                 if (workerCommandExecutionResult.ExitCode != 0)
                 {
-                    Console.WriteLine($"Execution of command {runCommand.Executable} {args} is finished with non-zero code:" +
-                                      $"{stderrBuilder}");
+                    Console.WriteLine($"Execution of command {runCommand.Executable} {args} is finished with non-zero code:\n" +
+                                      $"{stderrBuilder}\n" +
+                                       "Stopped worker execution");
                     break;
                 }
 
