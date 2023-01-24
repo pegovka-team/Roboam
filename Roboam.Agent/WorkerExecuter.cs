@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,11 +33,11 @@ namespace agent
 
                 var stderrBuilder = new StringBuilder();
                 
-                // TODO: починить команды с выводом в stdout (падают с broken pipe)
                 // TOOD: обработать ошибки запуска процесса
                 workerCommandExecution = Cli.Wrap(runCommand.Executable)
                     .WithArguments(args)
                     .WithValidation(CommandResultValidation.None)
+                    .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
                     .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
                     .ExecuteAsync(killCts.Token, cancelCts.Token);
                 var workerCommandExecutionResult = await workerCommandExecution;
