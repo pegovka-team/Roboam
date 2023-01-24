@@ -36,7 +36,7 @@ export const ListWithSearch = observer(({
                 />
             </Box>
             <List sx={{
-                maxHeight: 150,
+                maxHeight: 300,
                 overflow: 'auto',
                 scrollbarWidth: 'thin',
                 scrollbarGutter: 'stable',
