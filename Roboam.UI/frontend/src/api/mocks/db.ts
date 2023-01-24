@@ -28,7 +28,7 @@ export const detailsLevels = [
     "detail 6",
 ];
 
-export const maxTaskNumber = 1000;
+export const maxTaskNumber = 800;
 
 const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
     const totalTasks = getRandomInt(maxTaskNumber / 2, maxTaskNumber + 1);
