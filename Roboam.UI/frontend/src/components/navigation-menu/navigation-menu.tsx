@@ -19,7 +19,11 @@ export const NavigationMenu = observer(() => {
                     onSearchChange={algorithmNameStore.handleSearchChange}
                     filteredItems={algorithmNameStore.filteredBySearchItems}
                     selectedItems={algorithmNameStore.selectedItems}
-                    onSelectItem={(item, active) => {
+                    onSelectSingleItem={(item) => {
+                        algorithmNameStore.setSelectedItem(item);
+                        algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
+                    }}
+                    onSelectMultipleItems={(item, active) => {
                         algorithmNameStore.changeSelectedItem(item, active);
                         algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
                     }}
@@ -30,7 +34,11 @@ export const NavigationMenu = observer(() => {
                     onSearchChange={tagStore.handleSearchChange}
                     filteredItems={tagStore.filteredBySearchItems}
                     selectedItems={tagStore.selectedItems}
-                    onSelectItem={(item, active) => {
+                    onSelectSingleItem={(item) => {
+                        tagStore.setSelectedItem(item);
+                        algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
+                    }}
+                    onSelectMultipleItems={(item, active) => {
                         tagStore.changeSelectedItem(item, active);
                         algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
                     }}

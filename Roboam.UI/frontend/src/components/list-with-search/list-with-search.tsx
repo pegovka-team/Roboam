@@ -8,7 +8,8 @@ interface ListWithSearchProps {
     onSearchChange: (change: string) => void;
     filteredItems: string[];
     selectedItems: string[];
-    onSelectItem: (item: string, active: boolean) => void;
+    onSelectSingleItem: (item: string) => void;
+    onSelectMultipleItems: (item: string, active: boolean) => void;
 }
 
 export const ListWithSearch = observer(({
@@ -17,7 +18,8 @@ export const ListWithSearch = observer(({
     onSearchChange,
     filteredItems,
     selectedItems,
-    onSelectItem
+    onSelectSingleItem,
+    onSelectMultipleItems
 } : ListWithSearchProps) => {
     return (
         <>
@@ -56,16 +58,39 @@ export const ListWithSearch = observer(({
                 }
             }}>
                 {filteredItems.map(i => (
-                    <ListItemButton
-                        key={i}
-                        selected={selectedItems.some(s => s === i)}
-                        onClick={() => {
-                            const selected = selectedItems.some(a => a === i);
-                            onSelectItem(i, !selected);
+                    <div key={i} 
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
                         }}
                     >
-                        {i}
-                    </ListItemButton>
+                        <ListItemButton
+                            style={{width: 115, overflowX: 'hidden', paddingLeft: 8}}
+                            selected={selectedItems.some(s => s === i)}
+                            onClick={() => onSelectSingleItem(i)}
+                        >
+                            {i}
+                        </ListItemButton>
+                        <ListItemButton
+                            style={{
+                                width: 20,
+                                height: 24,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                backgroundColor: 'rgba(0, 0, 0, .02)',
+                                borderRadius: 50,
+                                padding: 0,
+                                boxShadow: '0px 0px 2px rgba(0, 0, 0, .2)'
+                            }}
+                            onClick={() => {
+                                const selected = selectedItems.some(a => a === i);
+                                onSelectMultipleItems(i, !selected);
+                            }}
+                        >
+                            {selectedItems.some(a => a === i) ? '-' : '+'}
+                        </ListItemButton>
+                    </div>
                 ))}
             </List>
         </>
