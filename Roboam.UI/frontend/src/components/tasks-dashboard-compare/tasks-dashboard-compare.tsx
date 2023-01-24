@@ -65,7 +65,7 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
                         {() => (
                             <Table
                                 headerHeight={30}
-                                headerRowRenderer={headerRowRenderer}
+                                headerRowRenderer={x => (headerRowRenderer(x, finalRenderList))}
                                 rowCount={finalRenderList.length}
                                 rowGetter={(index) => finalRenderList[index.index]}
                                 rowRenderer={x => rowRenderer(x, finalRenderList, indexToScroll)}
@@ -85,12 +85,20 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     );
 });
 
-function headerRowRenderer(x: TableHeaderRowProps) {
-    // todo: not implemented
+function headerRowRenderer(x: TableHeaderRowProps, items: IAlgorithmData[][]) {
+    const algorithmNames = items[0].map(i => i.algorithmName);
+
     return (
-      <div>
-          
-      </div>  
+      <section style={{display: 'inline-flex'}}>
+          <div style={{width: 55}}>
+              Task
+          </div>
+          {algorithmNames.map(algorithmName => (
+              <div key={algorithmName} style={{width: 140}}>
+                  {algorithmName}
+              </div>
+          ))}
+      </section>  
     );
 }
 
