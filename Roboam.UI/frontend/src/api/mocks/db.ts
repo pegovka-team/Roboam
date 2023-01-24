@@ -37,7 +37,8 @@ const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
     return taskNumbers.flatMap((_, taskNumber) => {
         const globalMax = getRandomInt(500, 1000);
         const localMax = getRandomInt(0, 4) === 1 ? globalMax : getRandomInt(300, globalMax);
-        
+        const tags = tagsNames.map(tag => getRandomInt(0, 4) == 1 ? tag : "").filter(t => t);
+
         let isAlgorithmLocalMaxSet = false;
 
         return algorithmNames.map((algorithmName, ind) => {
@@ -54,8 +55,6 @@ const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
             const currentSentTimeMin = algorithmMax === algorithmCurrentScore
                 ? bestSentTimeMin
                 : getRandomInt(1, bestSentTimeMin);
-
-            const tags = tagsNames.map(tag => getRandomInt(0, 2) == 1 ? tag : "").filter(t => t);
 
             // todo: по каждой задаче несколько интересных решений (метаданные артефакта)
             // на фронт инфу по всем артефактам для агрегации
