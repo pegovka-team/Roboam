@@ -1,5 +1,3 @@
-import { Star } from "@mui/icons-material";
-import ScoreItem from "../score-item";
 import { Paper } from "@mui/material";
 import { FC, Fragment, useContext } from "react";
 import { IAlgorithmData } from "../../models/algorithm-data";
@@ -14,43 +12,46 @@ import {
     OverscanIndices,
     OverscanIndicesGetterParams
 } from "react-virtualized";
+import TaskItem from "../task-item/task-item";
 
 // https://github.com/bvaughn/react-virtualized/issues/1739
 const AutoSizer = _AutoSizer as unknown as FC<AutoSizerProps>;
 const Grid = _Grid as unknown as FC<GridProps>;
 
-const rowsCount = 24;
+const rowHeight = 30;
 
 const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
+    const { rootStore } = useContext(ROOT_STORE_CONTEXT);
+    const { appStore } = rootStore;
+
     if (tasks.length === 0)
         return <div>Loading..</div>;
     
+    const rowsCount = Math.floor(appStore.screenHeight / rowHeight) - 1; 
     const columnsCount = Math.ceil(tasks.length / rowsCount);
     
     return (
-        <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh'}}>
-            <div style={{width: 'calc(100vw - 160px)' }}>
-                <AutoSizer disableHeight>
-                    {({width}) => (
-                        <Grid
-                            style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
-                            cellRenderer={it => cellRenderer(it, tasks)}
-                            columnWidth={200}
-                            columnCount={columnsCount}
-                            height={window.innerHeight}
-                            rowHeight={30}
-                            rowCount={rowsCount}
-                            width={width}
-                            overscanColumnCount={5}
-                            overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
-                        />)}
-                </AutoSizer>
-            </div>
+        <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh', width: '100%'}}>
+            <AutoSizer disableHeight>
+                {({width}) => (
+                    <Grid
+                        style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
+                        cellRenderer={it => cellRenderer(it, tasks, rowsCount)}
+                        columnWidth={200}
+                        columnCount={columnsCount}
+                        height={appStore.screenHeight}
+                        rowHeight={rowHeight}
+                        rowCount={rowsCount}
+                        width={width}
+                        overscanColumnCount={5}
+                        overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
+                    />)}
+            </AutoSizer>
         </Paper>
     );
 });
 
-function bothDirectionOverscanIndicesGetter({
+export function bothDirectionOverscanIndicesGetter({
    cellCount,
    overscanCellsCount,
    startIndex,
@@ -62,7 +63,7 @@ function bothDirectionOverscanIndicesGetter({
     }
 }
 
-function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[]) {
+function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[], rowsCount: number) {
     const item = items[rowsCount * columnIndex + rowIndex];
     
     if (!item) {
@@ -74,66 +75,6 @@ function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlg
             <TaskItem item={item}/>
         </div>
     );
-}
-
-interface TaskItemProps {
-    item: IAlgorithmData;
-}
-
-const TaskItem = observer(({item}: TaskItemProps) => {
-    const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { favoriteTasksStore } = rootStore;
-    const { favoriteTasksMap } = favoriteTasksStore;
-
-    return (
-        <div key={item.taskNumber} style={{
-            display: 'flex',
-            height: '28px',
-            lineHeight: '28px',
-            alignItems: 'center',
-            justifyContent: 'left',
-        }}>
-            <div style={{ width: 25, height: 24 }}>
-                {favoriteTasksMap[item.taskNumber]
-                    ? <Star sx={{color: 'gold'}} onClick={() => favoriteTasksStore.deleteFavorite(item.taskNumber)} />
-                    : <Star sx={{color: 'lightgray'}} onClick={() => favoriteTasksStore.setFavorite(item.taskNumber)} />
-                }
-            </div>
-            <div style={{ width: 30, fontSize: '12px' }}>{item.taskNumber}</div>
-            <div style={{ width: 100, height: 22 }}>
-                <ScoreItem
-                    width={100}
-                    algorithmCurrentScore={item.algorithmCurrentScore}
-                    algorithmMax={item.algorithmMax}
-                    localMax={item.localMax}
-                    globalMax={item.globalMax}
-                    precision={0}
-                />
-            </div>
-            <div style={{ paddingLeft: 8, color: 'gray', fontSize: '10px' }}>
-                {getTimeInterval(item.bestSentTimeMin)}
-            </div>
-        </div>
-    );
-});
-
-function getTimeInterval(minutes: number): string {
-    if (minutes <= 1) {
-        return 'now';
-    }
-    if (minutes <= 5) {
-        return '< 5m';
-    }
-    if (minutes <= 10) {
-        return '< 10m';
-    }
-    if (minutes <= 30) {
-        return '< 30m';
-    }
-    if (minutes <= 60) {
-        return '< 60m';
-    }
-    return '';
 }
 
 export default TasksDashboard;
