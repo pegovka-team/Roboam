@@ -3,20 +3,20 @@ import { IAlgorithmData } from "../../models/algorithm-data";
 import _ from "lodash";
 
 export const algorithmNames = [
-    "algo 1",
-    "algo 2",
-    "algo 3",
-    "algo 4",
-    "algo 5",
-    "algo 6",
+    "Merger",
+    "GridGuidPainter",
+    "MinMatchFinder",
+    "SwapSolver",
+    "SimpleAlgorithm",
+    "Greedy",
 ];
 
 export const tagsNames = [
-    "tag1",
-    "tag2",
-    "tag3",
-    "tag4",
-    "tag5",
+    "Small task",
+    "Picture",
+    "Colored",
+    "Big task",
+    "Bot",
 ];
 
 export const detailsLevels = [
