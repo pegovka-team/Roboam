@@ -49,8 +49,13 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
         ...renderFavoritesList,
         ... renderList
     ];
+    
+    const tasksIndexes: {[taskNumber: number]: number} = {};
+    for (let i = 0; i < finalRenderList.length; i++) {
+        tasksIndexes[finalRenderList[i][0].taskNumber] = i;
+    }
 
-    const indexToScroll = getIndexToScroll(appStore.taskNumberToScroll, renderFavoritesList, renderList, favoriteTasksMap);
+    const indexToScroll = appStore.taskNumberToScroll === undefined ? undefined : tasksIndexes[appStore.taskNumberToScroll];
 
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', width: '100%'}}>
@@ -79,21 +84,6 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
         </Paper>
     );
 });
-
-function getIndexToScroll(
-    taskNumberToScroll: number | undefined,
-    favoriteTasks: IAlgorithmData[][],
-    tasks: IAlgorithmData[][],
-    favoriteTasksMap: Record<number, boolean>
-) {
-    if (taskNumberToScroll === undefined) {
-        return undefined;
-    }
-    if (favoriteTasksMap[taskNumberToScroll]) {
-        return favoriteTasks.findIndex(x => x[0].taskNumber === taskNumberToScroll);
-    }
-    return favoriteTasks.filter(t => t[0].taskNumber > taskNumberToScroll).length + taskNumberToScroll - 1
-}
 
 function headerRowRenderer(x: TableHeaderRowProps) {
     // todo: not implemented

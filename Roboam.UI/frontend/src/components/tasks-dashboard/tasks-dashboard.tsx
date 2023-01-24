@@ -46,7 +46,13 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     
     const rowsCount = Math.floor(appStore.screenHeight / rowHeight) - 1; 
     const columnsCount = Math.ceil(allTasks.length / rowsCount);
-    const indexToScroll = getIndexToScroll(appStore.taskNumberToScroll, favorite, otherTasks, favoriteTasksMap);
+
+    const tasksIndexes: {[taskNumber: number]: number} = {};
+    for (let i = 0; i < allTasks.length; i++) {
+        tasksIndexes[allTasks[i].taskNumber] = i;
+    }
+
+    const indexToScroll = appStore.taskNumberToScroll === undefined ? undefined : tasksIndexes[appStore.taskNumberToScroll];
     
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh', width: '100%'}}>
@@ -79,21 +85,6 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
         </Paper>
     );
 });
-
-function getIndexToScroll(
-    taskNumberToScroll: number | undefined,
-    favoriteTasks: IAlgorithmData[],
-    tasks: IAlgorithmData[],
-    favoriteTasksMap: Record<number, boolean>
-) {
-    if (taskNumberToScroll === undefined) {
-        return undefined;
-    }
-    if (favoriteTasksMap[taskNumberToScroll]) {
-        return favoriteTasks.findIndex(x => x.taskNumber === taskNumberToScroll);
-    }
-    return favoriteTasks.filter(t => t.taskNumber > taskNumberToScroll).length + taskNumberToScroll - 1;
-}
 
 export function bothDirectionOverscanIndicesGetter({
    cellCount,
