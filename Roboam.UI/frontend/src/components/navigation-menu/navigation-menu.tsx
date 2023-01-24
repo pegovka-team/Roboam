@@ -35,14 +35,14 @@ export const NavigationMenu = observer(() => {
                         algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
                     }}
                 />
-                <ListWithSearch
-                    searchLabel={'Details level'}
-                    search={detailsLevelStore.search}
-                    onSearchChange={detailsLevelStore.handleSearchChange}
-                    filteredItems={detailsLevelStore.filteredBySearchItems}
-                    selectedItems={detailsLevelStore.selectedItems}
-                    onSelectItem={detailsLevelStore.changeSelectedItem}
-                />
+                {/*<ListWithSearch*/}
+                {/*    searchLabel={'Details level'}*/}
+                {/*    search={detailsLevelStore.search}*/}
+                {/*    onSearchChange={detailsLevelStore.handleSearchChange}*/}
+                {/*    filteredItems={detailsLevelStore.filteredBySearchItems}*/}
+                {/*    selectedItems={detailsLevelStore.selectedItems}*/}
+                {/*    onSelectItem={detailsLevelStore.changeSelectedItem}*/}
+                {/*/>*/}
             </article>
         </NavigationItemsWrapper>
     );
