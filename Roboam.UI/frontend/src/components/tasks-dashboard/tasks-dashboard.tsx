@@ -70,6 +70,7 @@ const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
                                         ? undefined
                                         : Math.ceil(indexToScroll / rowsCount)
                                 }
+                                scrollToAlignment='center'
                             />
                         )}
                     </Observer>

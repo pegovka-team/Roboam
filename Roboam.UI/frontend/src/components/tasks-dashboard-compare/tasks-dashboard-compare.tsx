@@ -70,6 +70,7 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
                                 overscanColumnCount={20}
                                 overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
                                 scrollToIndex={indexToScroll}
+                                scrollToAlignment='center'
                             />
                         )}
                     </Observer>
