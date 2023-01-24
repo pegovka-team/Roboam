@@ -37,9 +37,17 @@ const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
     return taskNumbers.flatMap((_, taskNumber) => {
         const globalMax = getRandomInt(500, 1000);
         const localMax = getRandomInt(0, 4) === 1 ? globalMax : getRandomInt(300, globalMax);
+        
+        let isAlgorithmLocalMaxSet = false;
 
-        return algorithmNames.map((algorithmName) => {
-            const algorithmMax = getRandomInt(0, 3) === 1 ? localMax : getRandomInt(200, localMax);
+        return algorithmNames.map((algorithmName, ind) => {
+            let algorithmMax = getRandomInt(0, 3) === 1 ? localMax : getRandomInt(200, localMax);
+            if (algorithmMax === localMax) {
+                isAlgorithmLocalMaxSet = true;
+            }
+            if (ind === algorithmNames.length - 1 && !isAlgorithmLocalMaxSet) {
+                algorithmMax = localMax;
+            }
             const algorithmCurrentScore = getRandomInt(0, 2) === 1 ? algorithmMax : getRandomInt(100, algorithmMax);
 
             const bestSentTimeMin = getRandomInt(2, 150);
