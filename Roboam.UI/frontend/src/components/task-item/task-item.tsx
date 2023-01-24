@@ -9,9 +9,10 @@ interface TaskItemProps {
     item: IAlgorithmData;
     disableStar?: boolean;
     disableTaskNumber?: boolean;
+    selected?: boolean;
 }
 
-const TaskItem = observer(({item, disableStar, disableTaskNumber}: TaskItemProps) => {
+const TaskItem = observer(({item, disableStar, disableTaskNumber, selected}: TaskItemProps) => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
     const { favoriteTasksStore } = rootStore;
     const { favoriteTasksMap } = favoriteTasksStore;
@@ -23,6 +24,8 @@ const TaskItem = observer(({item, disableStar, disableTaskNumber}: TaskItemProps
             lineHeight: '28px',
             alignItems: 'center',
             justifyContent: 'left',
+            boxShadow: selected ? '0px 0px 3px red' : undefined,
+            borderRadius: selected ? 15 : undefined
         }}>
             {disableStar ? null : (
                 <div style={{ width: 25, height: 24 }}>

@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 
 export default class AppStore {
     public screenHeight: number = window.innerHeight;
+    public taskNumberToScroll?: number;
 
     constructor() {
         makeAutoObservable(this);
@@ -12,6 +13,10 @@ export default class AppStore {
         self.addEventListener("resize", () => {
             this.screenHeight = window.innerHeight;
         });
+    }
+
+    setTaskToScroll(taskNumber: number | undefined) {
+        this.taskNumberToScroll = taskNumber;
     }
 
     private setLightTheme() {

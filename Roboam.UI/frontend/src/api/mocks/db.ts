@@ -3,20 +3,20 @@ import { IAlgorithmData } from "../../models/algorithm-data";
 import _ from "lodash";
 
 export const algorithmNames = [
-    "algo 1",
-    "algo 2",
-    "algo 3",
-    "algo 4",
-    "algo 5",
-    "algo 6",
+    "Merger",
+    "GridGuidPainter",
+    "MinMatchFinder",
+    "SwapSolver",
+    "SimpleAlgorithm",
+    "Greedy",
 ];
 
 export const tagsNames = [
-    "tag1",
-    "tag2",
-    "tag3",
-    "tag4",
-    "tag5",
+    "Small task",
+    "Picture",
+    "Colored",
+    "Big task",
+    "Bot",
 ];
 
 export const detailsLevels = [
@@ -28,7 +28,7 @@ export const detailsLevels = [
     "detail 6",
 ];
 
-export const maxTaskNumber = 1000;
+export const maxTaskNumber = 800;
 
 const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
     const totalTasks = getRandomInt(maxTaskNumber / 2, maxTaskNumber + 1);
@@ -37,17 +37,24 @@ const getAlgorithmDataList = (algorithmNames: string[]): IAlgorithmData[] => {
     return taskNumbers.flatMap((_, taskNumber) => {
         const globalMax = getRandomInt(500, 1000);
         const localMax = getRandomInt(0, 4) === 1 ? globalMax : getRandomInt(300, globalMax);
+        const tags = tagsNames.map(tag => getRandomInt(0, 4) == 1 ? tag : "").filter(t => t);
 
-        return algorithmNames.map((algorithmName) => {
-            const algorithmMax = getRandomInt(0, 3) === 1 ? localMax : getRandomInt(200, localMax);
+        let isAlgorithmLocalMaxSet = false;
+
+        return algorithmNames.map((algorithmName, ind) => {
+            let algorithmMax = getRandomInt(0, 3) === 1 ? localMax : getRandomInt(200, localMax);
+            if (algorithmMax === localMax) {
+                isAlgorithmLocalMaxSet = true;
+            }
+            if (ind === algorithmNames.length - 1 && !isAlgorithmLocalMaxSet) {
+                algorithmMax = localMax;
+            }
             const algorithmCurrentScore = getRandomInt(0, 2) === 1 ? algorithmMax : getRandomInt(100, algorithmMax);
 
             const bestSentTimeMin = getRandomInt(2, 150);
             const currentSentTimeMin = algorithmMax === algorithmCurrentScore
                 ? bestSentTimeMin
                 : getRandomInt(1, bestSentTimeMin);
-
-            const tags = tagsNames.map(tag => getRandomInt(0, 2) == 1 ? tag : "").filter(t => t);
 
             // todo: по каждой задаче несколько интересных решений (метаданные артефакта)
             // на фронт инфу по всем артефактам для агрегации

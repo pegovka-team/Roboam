@@ -2,7 +2,7 @@ import { Paper } from "@mui/material";
 import { FC, Fragment, useContext } from "react";
 import { IAlgorithmData } from "../../models/algorithm-data";
 import { ROOT_STORE_CONTEXT } from "../../index";
-import { observer } from "mobx-react";
+import { Observer, observer } from "mobx-react";
 import {
     AutoSizer as _AutoSizer,
     AutoSizerProps,
@@ -22,30 +22,65 @@ const rowHeight = 30;
 
 const TasksDashboard = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { appStore } = rootStore;
+    const { appStore, favoriteTasksStore } = rootStore;
+    const { favoriteTasksMap } = favoriteTasksStore;
 
     if (tasks.length === 0)
         return <div>Loading..</div>;
+
+    const favorite: IAlgorithmData[] = [];
+    const otherTasks: IAlgorithmData[] = [];
+
+    for (const task of tasks) {
+        if (favoriteTasksMap[task.taskNumber]) {
+            favorite.push(task);
+        } else {
+            otherTasks.push(task);
+        }
+    }
+
+    const allTasks = [
+        ...favorite,
+        ...otherTasks
+    ]
     
     const rowsCount = Math.floor(appStore.screenHeight / rowHeight) - 1; 
-    const columnsCount = Math.ceil(tasks.length / rowsCount);
+    const columnsCount = Math.ceil(allTasks.length / rowsCount);
+
+    const tasksIndexes: {[taskNumber: number]: number} = {};
+    for (let i = 0; i < allTasks.length; i++) {
+        tasksIndexes[allTasks[i].taskNumber] = i;
+    }
+
+    const indexToScroll = appStore.taskNumberToScroll === undefined ? undefined : tasksIndexes[appStore.taskNumberToScroll];
     
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', height: '100vh', width: '100%'}}>
             <AutoSizer disableHeight>
                 {({width}) => (
-                    <Grid
-                        style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
-                        cellRenderer={it => cellRenderer(it, tasks, rowsCount)}
-                        columnWidth={200}
-                        columnCount={columnsCount}
-                        height={appStore.screenHeight}
-                        rowHeight={rowHeight}
-                        rowCount={rowsCount}
-                        width={width}
-                        overscanColumnCount={5}
-                        overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
-                    />)}
+                    <Observer>
+                        {() => (
+                            <Grid
+                                style={{paddingBlockStart: '8px', paddingInlineStart: '8px' }}
+                                cellRenderer={it => cellRenderer(it, allTasks, rowsCount, indexToScroll)}
+                                columnWidth={200}
+                                columnCount={columnsCount}
+                                height={appStore.screenHeight}
+                                rowHeight={rowHeight}
+                                rowCount={rowsCount}
+                                width={width}
+                                overscanColumnCount={5}
+                                overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
+                                scrollToColumn={
+                                    indexToScroll === undefined
+                                        ? undefined
+                                        : Math.ceil(indexToScroll / rowsCount)
+                                }
+                                scrollToAlignment='center'
+                            />
+                        )}
+                    </Observer>
+                )}
             </AutoSizer>
         </Paper>
     );
@@ -63,16 +98,16 @@ export function bothDirectionOverscanIndicesGetter({
     }
 }
 
-function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[], rowsCount: number) {
-    const item = items[rowsCount * columnIndex + rowIndex];
-    
+function cellRenderer({columnIndex, rowIndex, style}: GridCellProps, items: IAlgorithmData[], rowsCount: number, idToScroll?: number) {
+    const index = rowsCount * columnIndex + rowIndex;
+    const item = items[index];
+
     if (!item) {
         return <Fragment />;
     }
-    
     return (
         <div style={style} key={`${columnIndex}-${rowIndex}`}>
-            <TaskItem item={item}/>
+            <TaskItem item={item} selected={index === idToScroll}/>
         </div>
     );
 }

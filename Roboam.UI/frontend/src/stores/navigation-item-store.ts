@@ -9,6 +9,17 @@ const NavigationItemStore = types.model({
     setItems: (items: string[]) => {
         self.items.replace(items);
     },
+    setSelectedItem: (item: string) => {
+      if (self.selectedItems.includes(item)) {
+          if (self.selectedItems.length == 1) {
+              self.selectedItems.clear();
+          } else {
+              self.selectedItems.replace([item]);
+          }
+      } else {
+          self.selectedItems.replace([item]);
+      }
+    },
     changeSelectedItem: (item: string, active: boolean) => {
         if (active) {
             if (self.selectedItems.every(selected => selected !== item)) {
