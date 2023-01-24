@@ -25,7 +25,7 @@ export const NavigationMenu = observer(() => {
                     }}
                 />
                 <ListWithSearch
-                    searchLabel={'Tag'}
+                    searchLabel={'Task tag'}
                     search={tagStore.search}
                     onSearchChange={tagStore.handleSearchChange}
                     filteredItems={tagStore.filteredBySearchItems}
