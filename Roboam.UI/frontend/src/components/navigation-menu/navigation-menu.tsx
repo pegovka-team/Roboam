@@ -4,13 +4,14 @@ import { useContext } from "react";
 import { ROOT_STORE_CONTEXT } from "../../index";
 import { observer } from "mobx-react";
 import styled from "@emotion/styled";
+import { TextField } from "@mui/material";
 
 export const NavigationMenu = observer(() => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { algorithmNameStore, tagStore, detailsLevelStore, algorithmDataStore } = rootStore;
+    const { algorithmNameStore, tagStore, algorithmDataStore, appStore } = rootStore;
 
     return (
-        <NavigationItemsWrapper style={{}}>
+        <NavigationItemsWrapper>
             <article style={{background: 'var(--filter-menu-background)'}}>
                 <Logotype />
                 <ListWithSearch
@@ -43,14 +44,17 @@ export const NavigationMenu = observer(() => {
                         algorithmDataStore.load(algorithmNameStore.selectedItems, tagStore.selectedItems);
                     }}
                 />
-                {/*<ListWithSearch*/}
-                {/*    searchLabel={'Details level'}*/}
-                {/*    search={detailsLevelStore.search}*/}
-                {/*    onSearchChange={detailsLevelStore.handleSearchChange}*/}
-                {/*    filteredItems={detailsLevelStore.filteredBySearchItems}*/}
-                {/*    selectedItems={detailsLevelStore.selectedItems}*/}
-                {/*    onSelectItem={detailsLevelStore.changeSelectedItem}*/}
-                {/*/>*/}
+                <TextField
+                    label='Show task..'
+                    variant='standard'
+                    value={appStore.taskNumberToScroll ?? ''}
+                    type='number'
+                    onChange={e => {
+                        const item = e.target.value ? Number.parseInt(e.target.value) : undefined;
+                        appStore.setTaskToScroll(item);
+                    }}
+                    sx={{color: 'var(--search-color)'}}
+                />
             </article>
         </NavigationItemsWrapper>
     );

@@ -6,22 +6,15 @@ import TasksDashboardCompare from "../../components/tasks-dashboard-compare/task
 
 const MainPage = observer(() => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { algorithmDataStore, favoriteTasksStore, algorithmNameStore } = rootStore;
-    const { favoriteTasksMap } = favoriteTasksStore;
-    const filteredByFavoriteTasks = algorithmDataStore.items.slice().sort(function(x, y) {
-        if (favoriteTasksMap[x.taskNumber] === favoriteTasksMap[y.taskNumber])
-            return 0;
-
-        return favoriteTasksMap[x.taskNumber] ? -1 : 1;
-    });
+    const { algorithmDataStore, algorithmNameStore } = rootStore;
 
     if (algorithmNameStore.selectedItems.length > 1) {
         return (
-            <TasksDashboardCompare tasks={filteredByFavoriteTasks} />
+            <TasksDashboardCompare tasks={algorithmDataStore.items} />
         );
     }
     return (
-        <TasksDashboard tasks={filteredByFavoriteTasks} />
+        <TasksDashboard tasks={algorithmDataStore.items} />
     );
 });
 

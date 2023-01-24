@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+import { Observer, observer } from "mobx-react";
 import { IAlgorithmData } from "../../models/algorithm-data";
 import { Paper } from "@mui/material";
 import {
@@ -19,7 +19,7 @@ const Table = _Table as unknown as FC<TableProps>;
 
 const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     const { rootStore } = useContext(ROOT_STORE_CONTEXT);
-    const { favoriteTasksStore } = rootStore;
+    const { favoriteTasksStore, appStore } = rootStore;
     const { favoriteTasksMap } = favoriteTasksStore;
 
     const byTaskNumber: {[taskNumber: number]: IAlgorithmData[]} = {};
@@ -50,27 +50,49 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
         ... renderList
     ];
 
+    const indexToScroll = getIndexToScroll(appStore.taskNumberToScroll, renderFavoritesList, renderList, favoriteTasksMap);
+
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', width: '100%'}}>
             <AutoSizer>
                 {({width, height}) => (
-                    <Table
-                        headerHeight={30}
-                        headerRowRenderer={headerRowRenderer}
-                        rowCount={finalRenderList.length}
-                        rowGetter={(index) => finalRenderList[index.index]}
-                        rowRenderer={x => rowRenderer(x, finalRenderList)}
-                        width={width}
-                        height={height}
-                        rowHeight={30}
-                        overscanColumnCount={20}
-                        overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
-                    />
+                    <Observer>
+                        {() => (
+                            <Table
+                                headerHeight={30}
+                                headerRowRenderer={headerRowRenderer}
+                                rowCount={finalRenderList.length}
+                                rowGetter={(index) => finalRenderList[index.index]}
+                                rowRenderer={x => rowRenderer(x, finalRenderList, indexToScroll)}
+                                width={width}
+                                height={height}
+                                rowHeight={30}
+                                overscanColumnCount={20}
+                                overscanIndicesGetter={bothDirectionOverscanIndicesGetter}
+                                scrollToIndex={indexToScroll}
+                            />
+                        )}
+                    </Observer>
                 )}
             </AutoSizer>
         </Paper>
     );
 });
+
+function getIndexToScroll(
+    taskNumberToScroll: number | undefined,
+    favoriteTasks: IAlgorithmData[][],
+    tasks: IAlgorithmData[][],
+    favoriteTasksMap: Record<number, boolean>
+) {
+    if (taskNumberToScroll === undefined) {
+        return undefined;
+    }
+    if (favoriteTasksMap[taskNumberToScroll]) {
+        return favoriteTasks.findIndex(x => x[0].taskNumber === taskNumberToScroll);
+    }
+    return favoriteTasks.filter(t => t[0].taskNumber > taskNumberToScroll).length + taskNumberToScroll - 1
+}
 
 function headerRowRenderer(x: TableHeaderRowProps) {
     // todo: not implemented
@@ -81,14 +103,18 @@ function headerRowRenderer(x: TableHeaderRowProps) {
     );
 }
 
-function rowRenderer(props: TableRowProps, items: IAlgorithmData[][]) {
+function rowRenderer(props: TableRowProps, items: IAlgorithmData[][], indexToScroll: number | undefined) {
     const [firstItem, ...otherItems] = items[props.index];
+    const selected = indexToScroll === props.index;
 
     return (
         <div key={props.index} style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'left',
+            boxShadow: selected ? '0px 0px 3px red' : undefined,
+            borderRadius: selected ? 15 : undefined,
+            maxWidth: 'fit-content',
             ...props.style
         }}>
             <TaskItem key={`${props.index}_${firstItem.taskNumber}`} item={firstItem} />
