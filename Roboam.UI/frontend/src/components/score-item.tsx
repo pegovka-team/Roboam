@@ -46,7 +46,7 @@ export default function ScoreItem({width, algorithmCurrentScore, algorithmMax, l
         >
             <ScoreContainer width={width}>
                 <div>{"\u00a0"}</div>
-                {localMax < limit && (
+                {localMax <= limit && (
                     <Spark
                         width={localMaxWidth}
                         background={"repeating-linear-gradient(45deg, var(--background), var(--background) 4px, var(--score-item-background), var(--score-item-background) 5.5px)"}
