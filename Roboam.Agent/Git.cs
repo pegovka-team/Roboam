@@ -23,7 +23,8 @@ namespace agent
             if (gitCloneExecutionResult.ExitCode != 0)
             {
                 throw new ArgumentException(
-                    $"Failed to clone {repoBranch} branch from {repoUrl}: {gitCloneExecutionResult.StandardError}");
+                    $"Failed to clone {repoBranch} branch from {repoUrl}:\n" +
+                    $"{gitCloneExecutionResult.StandardError}");
             }
             return gitCloneExecutionResult;
         }
@@ -43,7 +44,7 @@ namespace agent
             if (gitLogExecutionResult.ExitCode != 0)
             {
                 throw new ArgumentException(
-                    $"Failed to get last commit info in {repoDirectory} directory:" +
+                    $"Failed to get last commit info in {repoDirectory} directory:\n" +
                     $"{gitLogExecutionResult.StandardError}");
             }
 
@@ -69,7 +70,7 @@ namespace agent
             if (gitFetchExecutionResult.ExitCode != 0)
             {
                 throw new ArgumentException(
-                    $"Failed to fetch {repoBranch} branch in {repoDirectory} directory: " +
+                    $"Failed to fetch {repoBranch} branch in {repoDirectory} directory:\n" +
                     $"{gitFetchExecutionResult.StandardError}");
             }
 
@@ -86,7 +87,7 @@ namespace agent
             if (gitResetExecutionResult.ExitCode != 0)
             {
                 throw new ArgumentException(
-                    $"Failed to reset {repoBranch} branch in {repoDirectory} directory: " +
+                    $"Failed to reset {repoBranch} branch in {repoDirectory} directory:\n" +
                     $"{gitResetExecutionResult.StandardError}");
             }
 

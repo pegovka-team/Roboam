@@ -33,7 +33,6 @@ namespace agent
 
                 var stderrBuilder = new StringBuilder();
                 
-                // TOOD: обработать ошибки запуска процесса
                 try
                 {
                     workerCommandExecution = Cli.Wrap(runCommand.Executable)
