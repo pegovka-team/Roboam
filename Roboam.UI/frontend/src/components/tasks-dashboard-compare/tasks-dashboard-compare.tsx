@@ -7,17 +7,22 @@ import {
     TableProps,
     TableRowProps
 } from "react-virtualized";
-import React, { FC } from "react";
+import React, { FC, useContext } from "react";
 import { AutoSizer as _AutoSizer } from "react-virtualized/dist/es/AutoSizer";
 import { bothDirectionOverscanIndicesGetter } from "../tasks-dashboard/tasks-dashboard";
 import TaskItem from "../task-item/task-item";
+import { ROOT_STORE_CONTEXT } from "../../index";
 
 // https://github.com/bvaughn/react-virtualized/issues/1739
 const AutoSizer = _AutoSizer as unknown as FC<AutoSizerProps>;
 const Table = _Table as unknown as FC<TableProps>;
 
 const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
-    const byTaskNumber: {[taskNumber: string]: IAlgorithmData[]} = {};
+    const { rootStore } = useContext(ROOT_STORE_CONTEXT);
+    const { favoriteTasksStore } = rootStore;
+    const { favoriteTasksMap } = favoriteTasksStore;
+
+    const byTaskNumber: {[taskNumber: number]: IAlgorithmData[]} = {};
     for (const task of tasks) {
         if (byTaskNumber[task.taskNumber]) {
             byTaskNumber[task.taskNumber].push(task);
@@ -27,13 +32,23 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
     }
 
     const renderList: IAlgorithmData[][] = [];
-    for (const [_, elements] of Object.entries(byTaskNumber)) {
+    const renderFavoritesList: IAlgorithmData[][] = [];
+    for (const [taskNumber, elements] of Object.entries(byTaskNumber)) {
         const data: IAlgorithmData[] = [];
         for (let i = 0; i < elements.length; i++) {
             data.push(elements[i]);
         }
-        renderList.push(data);
+        if (favoriteTasksMap[Number.parseInt(taskNumber)]) {
+            renderFavoritesList.push(data);
+        } else {
+            renderList.push(data);
+        }
     }
+    
+    const finalRenderList = [
+        ...renderFavoritesList,
+        ... renderList
+    ];
 
     return (
         <Paper square sx={{userSelect: 'none', overflow: 'hidden', width: '100%'}}>
@@ -42,9 +57,9 @@ const TasksDashboardCompare = observer(({tasks}: {tasks: IAlgorithmData[]}) => {
                     <Table
                         headerHeight={30}
                         headerRowRenderer={headerRowRenderer}
-                        rowCount={renderList.length}
-                        rowGetter={(index) => renderList[index.index]}
-                        rowRenderer={x => rowRenderer(x, renderList)}
+                        rowCount={finalRenderList.length}
+                        rowGetter={(index) => finalRenderList[index.index]}
+                        rowRenderer={x => rowRenderer(x, finalRenderList)}
                         width={width}
                         height={height}
                         rowHeight={30}
