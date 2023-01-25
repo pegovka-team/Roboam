@@ -21,10 +21,10 @@ const tooltipText = (algorithmName: string, currentScore: number, currentMax: nu
     return (
         <TooltipTextWrapper>
             {`${algorithmName}\n
-Current score:\t${currentScore}\n
-Current max:\t${currentMax}\n
-Local max:\t${localMax}\n
-${globalMax && `Global max:\t${globalMax}`}`}
+Last result: ${currentScore}\n
+Best for this algo: ${currentMax}\n
+Best for all algos: ${localMax}\n
+${globalMax && `Best in the world: ${globalMax}`}`}
         </TooltipTextWrapper>
     );
 }
