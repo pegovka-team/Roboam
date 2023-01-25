@@ -21,10 +21,10 @@ const tooltipText = (algorithmName: string, currentScore: number, currentMax: nu
     return (
         <TooltipTextWrapper>
             {`${algorithmName}\n
-Current score:\t${currentScore}\n
-Current max:\t${currentMax}\n
-Local max:\t${localMax}\n
-${globalMax && `Global max:\t${globalMax}`}`}
+Last result: ${currentScore}\n
+Best for this algo: ${currentMax}\n
+Best for all algos: ${localMax}\n
+${globalMax && `Best in the world: ${globalMax}`}`}
         </TooltipTextWrapper>
     );
 }
@@ -46,7 +46,7 @@ export default function ScoreItem({width, algorithmCurrentScore, algorithmMax, l
         >
             <ScoreContainer width={width}>
                 <div>{"\u00a0"}</div>
-                {localMax <= limit && (
+                {localMax <= limit && algorithmMax < localMax && (
                     <Spark
                         width={localMaxWidth}
                         background={"repeating-linear-gradient(45deg, var(--background), var(--background) 4px, var(--score-item-background), var(--score-item-background) 5.5px)"}

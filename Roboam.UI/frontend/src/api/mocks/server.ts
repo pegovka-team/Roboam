@@ -63,8 +63,13 @@ server.get("/favoriteTask", function (_req, res) {
     });
 });
 
-server.post("/favoriteTask", function (req, res) {
-    favoriteTasks.push(req.body.taskId);
+server.post("/favoriteTask/:taskId", function (req, res) {
+    if (!req.params.taskId) {
+        return res.jsonp({
+            isSuccessful: false
+        });
+    }
+    favoriteTasks.push(Number.parseInt(req.params.taskId));
     return res.jsonp({
         isSuccessful: true,
     });
