@@ -11,7 +11,7 @@ namespace agent
         {
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: agent <repoUrl> <repoDirectory> <repoBranch> [repoUpdateInterval]");
+                Console.WriteLine("Usage: dotnet run <repoUrl> <repoDirectory> <repoBranch> [repoUpdateInterval]");
                 return;
             }
             var repoUrl = args[0];
@@ -44,12 +44,7 @@ namespace agent
 
                     if (currentCommitMessage.StartsWith("#restart"))
                     {
-                        try {
-                            executer.InterruptCurrentExecution();
-                        }
-                        catch (OperationCanceledException)
-                        {
-                        }
+                        executer.InterruptCurrentExecution();
 
                         executer = new WorkerExecuter(repoDirectory);
                         
