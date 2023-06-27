@@ -26,16 +26,16 @@ namespace agent
         {
             Console.WriteLine($"Executing runworker.sh {args}");
 
+            var stdoutBuilder = new StringBuilder();
             var stderrBuilder = new StringBuilder();
-            
+
             try
             {
-                
                 workerCommandExecution = Cli.Wrap("bash")
                     .WithArguments("runworker.sh" + " " + args)
                     .WithWorkingDirectory(repoDirectory)
                     .WithValidation(CommandResultValidation.None)
-                    .WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null))
+                    .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdoutBuilder))
                     .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stderrBuilder))
                     .ExecuteAsync(killCts.Token, cancelCts.Token);
             }
@@ -43,13 +43,21 @@ namespace agent
             {
                 Console.WriteLine($"Failed to runworker.sh with args {args}:\n" +
                                   $"{e.Message}\n" +
-                                   "Stopped worker execution");
+                                  "Stopped worker execution");
                 return;
             }
 
-            var workerCommandExecutionResult = await workerCommandExecution;
+            CommandResult workerCommandExecutionResult = new(0,new DateTimeOffset(), new DateTimeOffset());
+            try
+            {
+                workerCommandExecutionResult = await workerCommandExecution;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
 
-            if (workerCommandExecutionResult.ExitCode != 0)
+            if (workerCommandExecutionResult.ExitCode != 0 && workerCommandExecutionResult.ExitCode != 130)
             {
                 Console.WriteLine($"Execution of runworker.sh {args} is finished with non-zero code:\n" +
                                   $"{stderrBuilder}\n" +
@@ -58,6 +66,7 @@ namespace agent
             }
 
             Console.WriteLine($"Finished execution of runworker.sh with args {args}");
+            Console.WriteLine(stdoutBuilder);
             cancelCts.TryReset();
             killCts.TryReset();
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
@@ -19,7 +20,7 @@ namespace agent
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
 
-            if (gitCloneExecutionResult.ExitCode != 0)
+            if (gitCloneExecutionResult.ExitCode != 0 && gitCloneExecutionResult.ExitCode != 130)
             {
                 throw new ArgumentException(
                     $"Failed to clone {repoBranch} branch from {repoUrl}:\n" +
@@ -40,7 +41,7 @@ namespace agent
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
             
-            if (gitLogExecutionResult.ExitCode != 0)
+            if (gitLogExecutionResult.ExitCode != 0 && gitLogExecutionResult.ExitCode != 130)
             {
                 throw new ArgumentException(
                     $"Failed to get last commit info in {repoDirectory} directory:\n" +
@@ -66,7 +67,7 @@ namespace agent
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
 
-            if (gitFetchExecutionResult.ExitCode != 0)
+            if (gitFetchExecutionResult.ExitCode != 0 && gitFetchExecutionResult.ExitCode != 130)
             {
                 throw new ArgumentException(
                     $"Failed to fetch {repoBranch} branch in {repoDirectory} directory:\n" +
@@ -83,7 +84,7 @@ namespace agent
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
 
-            if (gitResetExecutionResult.ExitCode != 0)
+            if (gitFetchExecutionResult.ExitCode != 0 && gitFetchExecutionResult.ExitCode != 130)
             {
                 throw new ArgumentException(
                     $"Failed to reset {repoBranch} branch in {repoDirectory} directory:\n" +
