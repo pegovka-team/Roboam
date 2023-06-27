@@ -23,6 +23,7 @@
     "mobx": "6.6.2",
     "mobx-react": "7.5.3",
     "mobx-state-tree": "5.1.6",
+    "postcss": "8.4.24",
     "prettier": "2.7.1",
     "query-string": "7.1.1",
     "react": "^18.2.0",
